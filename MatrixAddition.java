@@ -3,14 +3,14 @@ import java.util.Random;
 
 public class MatrixAddition {
 
-    static int rows = 13;
-    static int cols = 31;
+    static int rows = 200_000;
+    static int cols = 1_000;
 
-    static int[][] A = new int[rows][cols];
-    static int[][] B = new int[rows][cols];
+    static short[][] A = new short[rows][cols];
+    static short[][] B = new short[rows][cols];
 
-    static int[][] sum1 = new int[rows][cols];
-    static int[][] sum2 = new int[rows][cols];
+    static short[][] sum1 = new short[rows][cols];
+    static short[][] sum2 = new short[rows][cols];
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -18,8 +18,8 @@ public class MatrixAddition {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                A[i][j] = rand.nextInt(rows * cols);
-                B[i][j] = rand.nextInt(rows * cols);
+                A[i][j] = (short) rand.nextInt(100);
+                B[i][j] = (short) rand.nextInt(100);
             }
         }
 
@@ -28,9 +28,10 @@ public class MatrixAddition {
         long startMillis = System.currentTimeMillis();
         long startNano = System.nanoTime();
 
+
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                sum1[i][j] = A[i][j] + B[i][j];
+                sum1[i][j] = (short) (A[i][j] + B[i][j]);
             }
         }
 
@@ -51,8 +52,8 @@ public class MatrixAddition {
         MatrixAdditionThread t2 = new MatrixAdditionThread(2);
         MatrixAdditionThread t3 = new MatrixAdditionThread(3);
 
-        endMillis = System.currentTimeMillis();
-        endNano = System.nanoTime();
+        startMillis = System.currentTimeMillis();
+        startNano = System.nanoTime();
 
         t0.start();
         t1.start();
@@ -64,6 +65,9 @@ public class MatrixAddition {
         t1.join();
         t2.join();
         t3.join();
+
+        endMillis = System.currentTimeMillis();
+        endNano = System.nanoTime();
 
         System.out.println("Parallel Millis: " + (endMillis - startMillis) + "ms");
         System.out.println("Parallel Nano: " + (endNano - startNano) +"ns");
@@ -88,7 +92,7 @@ public class MatrixAddition {
 
             for (int i = start; i < end; i++) {
                 for (int j = 0; j < cols; j++) {
-                    sum2[i][j] = A[i][j] + B[i][j];
+                    sum2[i][j] = (short) (A[i][j] + B[i][j]);
                 }
             }
         }

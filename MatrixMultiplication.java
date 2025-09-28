@@ -74,6 +74,7 @@ public class MatrixMultiplication {
 
         endMillis = System.currentTimeMillis();
         endNano = System.nanoTime();
+
         System.out.println("Parallel Millis: " + (endMillis - startMillis) + "ms");
         System.out.println("Parallel Nano: " + (endNano - startNano) +"ns");
 //

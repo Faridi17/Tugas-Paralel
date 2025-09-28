@@ -4,7 +4,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 class BubbleSort {
-    static int length = 40_000;
+    static int length = 50_000;
     static int[] data1 = new int[length];
     static int[] data2 = new int[length];
     static int[] data3 = new int[length];
@@ -24,13 +24,14 @@ class BubbleSort {
         long startMillis = System.currentTimeMillis();
         long startNano = System.nanoTime();
 
-        bubbleSort();
+//        bubbleSort();
+        Arrays.parallelSort(data1);
 
         long endMillis = System.currentTimeMillis();
         long endNano = System.nanoTime();
 
-        System.out.println("Sequential Millis: " + (endMillis - startMillis) + "ms");
-        System.out.println("Sequential Nano: " + (endNano - startNano) +"ns");
+        System.out.println("Sequential Bubble Sort Millis: " + (endMillis - startMillis) + "ms");
+        System.out.println("Sequential Bubble Sort Nano: " + (endNano - startNano) +"ns");
 
 //
 //
@@ -213,6 +214,7 @@ class BubbleSort {
     private static void merge(int start, int end) {
         int mid = (start + end) / 2;
         int[] temp = new int[end - start];
+        int length = temp.length;
         int i = start, j = mid, k = 0;
 
         while (i < mid && j < end) {
@@ -222,6 +224,6 @@ class BubbleSort {
         while (i < mid) temp[k++] = data3[i++];
         while (j < end) temp[k++] = data3[j++];
 
-        for (k = 0; k < temp.length; k++) data3[start + k] = temp[k];
+        for (k = 0; k < length; k++) data3[start + k] = temp[k];
     }
 }
