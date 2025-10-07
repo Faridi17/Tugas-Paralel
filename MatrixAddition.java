@@ -5,6 +5,7 @@ public class MatrixAddition {
 
     static int rows = 200_000;
     static int cols = 1_000;
+    static int MAX_THREAD = 4;
 
     static short[][] A = new short[rows][cols];
     static short[][] B = new short[rows][cols];
@@ -18,8 +19,8 @@ public class MatrixAddition {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                A[i][j] = (short) rand.nextInt(100);
-                B[i][j] = (short) rand.nextInt(100);
+                A[i][j] = (short) rand.nextInt(10000);
+                B[i][j] = (short) rand.nextInt(10000);
             }
         }
 
@@ -47,24 +48,21 @@ public class MatrixAddition {
 
 //      Parallel
 //
-        MatrixAdditionThread t0 = new MatrixAdditionThread(0);
-        MatrixAdditionThread t1 = new MatrixAdditionThread(1);
-        MatrixAdditionThread t2 = new MatrixAdditionThread(2);
-        MatrixAdditionThread t3 = new MatrixAdditionThread(3);
+
+        MatrixAdditionThread[] threads = new MatrixAdditionThread[MAX_THREAD];
 
         startMillis = System.currentTimeMillis();
         startNano = System.nanoTime();
 
-        t0.start();
-        t1.start();
-        t2.start();
-        t3.start();
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i] = new MatrixAdditionThread(i);
+            threads[i].start();
+        }
 
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i].join();
+        }
 
-        t0.join();
-        t1.join();
-        t2.join();
-        t3.join();
 
         endMillis = System.currentTimeMillis();
         endNano = System.nanoTime();
@@ -86,9 +84,9 @@ public class MatrixAddition {
 
         @Override
         public void run() {
-            int rowsPerThread = rows / 4;
+            int rowsPerThread = rows / MAX_THREAD;
             int start = myPart * rowsPerThread;
-            int end = (myPart == 3) ? rows : start + rowsPerThread;
+            int end = (myPart == MAX_THREAD -1) ? rows : start + rowsPerThread;
 
             for (int i = start; i < end; i++) {
                 for (int j = 0; j < cols; j++) {

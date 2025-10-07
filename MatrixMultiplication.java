@@ -8,6 +8,8 @@ public class MatrixMultiplication {
     static int rowsB = colsA;
     static int colsB = rowsA;
 
+    static int MAX_THREAD = 4;
+
     static int[][] A = new int[rowsA][colsA];
     static int[][] B = new int[rowsB][colsB];
     static int[][] Result1 = new int[rowsA][colsB];
@@ -54,23 +56,19 @@ public class MatrixMultiplication {
 
 //      Parallel
 //
-        MatrixMultiplicationThread t0 = new MatrixMultiplicationThread(0);
-        MatrixMultiplicationThread t1 = new MatrixMultiplicationThread(1);
-        MatrixMultiplicationThread t2 = new MatrixMultiplicationThread(2);
-        MatrixMultiplicationThread t3 = new MatrixMultiplicationThread(3);
+        MatrixMultiplicationThread[] threads = new MatrixMultiplicationThread[MAX_THREAD];
 
         startMillis = System.currentTimeMillis();
         startNano = System.nanoTime();
 
-        t0.start();
-        t1.start();
-        t2.start();
-        t3.start();
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i] = new MatrixMultiplicationThread(i);
+            threads[i].start();
+        }
 
-        t0.join();
-        t1.join();
-        t2.join();
-        t3.join();
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i].join();
+        }
 
         endMillis = System.currentTimeMillis();
         endNano = System.nanoTime();
@@ -92,9 +90,9 @@ public class MatrixMultiplication {
 
         @Override
         public void run() {
-            int rowsPerThread = rowsA / 4;
+            int rowsPerThread = rowsA / MAX_THREAD;
             int start = myPart * rowsPerThread;
-            int end = (myPart == 3) ? rowsA : start + rowsPerThread;
+            int end = (myPart == MAX_THREAD - 1) ? rowsA : start + rowsPerThread;
 
             for (int i = start; i < end; i++) {
                 for (int j = 0; j < colsB; j++) {

@@ -24,7 +24,7 @@ class BubbleSort {
         long startMillis = System.currentTimeMillis();
         long startNano = System.nanoTime();
 
-//        bubbleSort();
+        bubbleSort();
         Arrays.parallelSort(data1);
 
         long endMillis = System.currentTimeMillis();

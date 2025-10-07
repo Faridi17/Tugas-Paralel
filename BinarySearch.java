@@ -1,20 +1,18 @@
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 
 public class BinarySearch {
 
-    static int length = 100_000_000;
+    static int length = 1_000_000_000;
     static int[] data = new int[length];
-    static int search = 9_999_000;
-    static int[] result = {-1,-1,-1,-1};
+    static int search = 4;
+    static int index2 = -1;
+
+    static int MAX_THREAD = 4;
 
 
     public static void main(String[] args) throws InterruptedException {
 
         for (int i = 0; i < length; i++) {
-            data[i] = i;
+            data[i] = i * 2;
         }
 
 
@@ -35,23 +33,19 @@ public class BinarySearch {
             System.out.println("Element is present at index: " + index1);
 
 
-        BinarySearchThread t0 = new BinarySearchThread(0);
-        BinarySearchThread t1 = new BinarySearchThread(1);
-        BinarySearchThread t2 = new BinarySearchThread(2);
-        BinarySearchThread t3 = new BinarySearchThread(3);
+        BinarySearchThread[] threads = new BinarySearchThread[MAX_THREAD];
 
         startMillis = System.currentTimeMillis();
         startNano = System.nanoTime();
 
-        t0.start();
-        t1.start();
-        t2.start();
-        t3.start();
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i] = new BinarySearchThread(i);
+            threads[i].start();
+        }
 
-        t0.join();
-        t1.join();
-        t2.join();
-        t3.join();
+        for (int i = 0; i < MAX_THREAD; i++) {
+            threads[i].join();
+        }
 
         endMillis = System.currentTimeMillis();
         endNano = System.nanoTime();
@@ -59,18 +53,12 @@ public class BinarySearch {
         System.out.println("Parallel: " + (endMillis - startMillis) + "ms");
         System.out.println("Parallel: " + (endNano - startNano) +"ns");
 
-        int Index2 = -1;
-        for (int i : result) {
-            if (i != -1) {
-                Index2 = i;
-                break;
-            }
-        }
+        
 
-        if (Index2 == -1) {
+        if (index2 == -1) {
             System.out.println("Element is not present in array");
         } else {
-            System.out.println("Element is present at index: " + Index2);
+            System.out.println("Element is present at index: " + index2);
         }
 
     }
@@ -104,15 +92,15 @@ public class BinarySearch {
 
         @Override
         public void run() {
-            int rowsPerThread = length / 4;
+            int rowsPerThread = length / MAX_THREAD;
             int left = myPart * rowsPerThread;
-            int right = (myPart == 3) ? length : left + rowsPerThread;
+            int right = (myPart == MAX_THREAD - 1) ? length : left + rowsPerThread;
 
             while (left <= right) {
                 int m = (left + right) / 2;
 
                 if (data[m] == search) {
-                    result[myPart] = m;
+                    index2 = m;
                     break;
                 } else if (data[m] > search) {
                     right = m - 1;
